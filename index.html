@@ -198,7 +198,14 @@ function splitL(l){const r=[];let c='',q=false;for(let i=0;i<l.length;i++){const
 function fmt(iso){const[y,m,d]=iso.split('-');return d+'/'+m+'/'+y;}
 
 function parseCSV(text){
-  const lines=text.trim().split(/\r?\n/);
+  // Encontra linha do cabeçalho real (contém 'data' e 'origem')
+  const allLines=text.trim().split(/\r?\n/);
+  let headerIdx=0;
+  for(let i=0;i<Math.min(allLines.length,15);i++){
+    const low=allLines[i].toLowerCase();
+    if((low.includes('data')||low.includes('date'))&&(low.includes('origem')||low.includes('origin'))){headerIdx=i;break;}
+  }
+  const lines=allLines.slice(headerIdx);
   if(lines.length<2)return[];
   const hdr=lines[0].split(/[;,]/).map(h=>cl(h).toLowerCase());
   const cDate=fc(hdr,['data','date']);
